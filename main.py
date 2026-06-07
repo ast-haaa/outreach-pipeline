@@ -1,6 +1,5 @@
-from services.ocean import OceanService
+from services.exlporium import OceanService
 from services.prospeo import ProspeoService
-from services.eazyreach import EazyreachService
 from services.brevo import BrevoService
 
 from utils.validators import validate_domain
@@ -15,16 +14,12 @@ if not validate_domain(domain):
 
 ocean = OceanService()
 prospeo = ProspeoService()
-eazyreach = EazyreachService()
 brevo = BrevoService()
 
 
 companies = ocean.get_similar_companies(domain)
 
 contacts = prospeo.find_decision_makers(companies)
-
-contacts = eazyreach.resolve_emails(contacts)
-
 
 print("\nContacts Found\n")
 

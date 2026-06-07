@@ -8,6 +8,7 @@ from models.contact import Contact
 class ProspeoService:
 
     SEARCH_URL = "https://api.prospeo.io/search-person"
+    ENRICH_URL = "https://api.prospeo.io/enrich-person"
 
     def find_decision_makers(self, domains):
 
@@ -22,14 +23,12 @@ class ProspeoService:
 
         for domain in domains:
 
-            payload = {
+            search_payload = {
                 "page": 1,
                 "filters": {
                     "company": {
                         "websites": {
-                            "include": [
-                                domain
-                            ]
+                            "include": [domain]
                         }
                     }
                 }
@@ -37,29 +36,62 @@ class ProspeoService:
 
             try:
 
-                response = requests.post(
+                search_response = requests.post(
                     self.SEARCH_URL,
                     headers=headers,
-                    json=payload,
+                    json=search_payload,
                     timeout=30
                 )
 
-                print("\nSEARCH STATUS:", response.status_code)
-                print(response.text)
+                search_data = search_response.json()
 
-                data = response.json()
-
-                if data.get("error"):
+                if search_data.get("error"):
                     continue
 
-                results = data.get("results", [])
+                results = search_data.get("results", [])
 
                 if not results:
                     continue
 
                 first = results[0]
-
                 person = first.get("person", {})
+                person_id = person.get("person_id")
+
+                email = None
+
+                if person_id:
+
+                    log("Enriching contact emails")
+
+                    enrich_payload = {
+                        "only_verified_email": True,
+                        "data": {
+                            "person_id": person_id
+                        }
+                    }
+
+                    enrich_response = requests.post(
+                        self.ENRICH_URL,
+                        headers=headers,
+                        json=enrich_payload,
+                        timeout=30
+                    )
+
+                    enrich_data = enrich_response.json()
+
+                    if not enrich_data.get("error"):
+
+                        enrich_person = enrich_data.get(
+                            "person",
+                            {}
+                        )
+
+                        email_data = enrich_person.get(
+                            "email",
+                            {}
+                        )
+
+                        email = email_data.get("email")
 
                 contacts.append(
                     Contact(
@@ -75,12 +107,12 @@ class ProspeoService:
                         linkedin_url=person.get(
                             "linkedin_url",
                             ""
-                        )
+                        ),
+                        email=email
                     )
                 )
 
             except Exception as e:
-
                 print(e)
 
         return contacts
