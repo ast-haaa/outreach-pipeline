@@ -1,38 +1,45 @@
 # Outreach Pipeline
 
-A Python-based outreach automation pipeline that automates the process of discovering companies, identifying decision-makers, resolving contact information, and sending outreach emails.
-
-## Overview
-
-This project was built as an outreach automation workflow using multiple third-party APIs.
-
-The pipeline starts with a company domain, discovers relevant business information, finds potential decision-makers, resolves contact details, and prepares them for outreach campaigns.
+A Python-based outreach automation pipeline that automates the process of discovering companies, identifying decision-makers, enriching contact information, and sending outreach emails.
 
 ---
 
-## Architecture
+# Overview
+
+This project automates the outbound prospecting workflow using multiple third-party APIs.
+
+Starting from a company domain, the pipeline:
+
+1. Matches and validates companies using Explorium.
+2. Finds relevant decision-makers using Prospeo Search.
+3. Retrieves verified email addresses using Prospeo Enrich.
+4. Sends outreach emails using Brevo.
+
+---
+
+# Architecture
 
 ```text
 Input Domain
       ↓
 Explorium Business Match
       ↓
-Company Discovery
+Prospeo Search
       ↓
-Prospeo Lead Discovery
+Prospeo Enrich
       ↓
-Email Resolution Layer
+Verified Contact
       ↓
 Brevo Email Delivery
 ```
 
 ---
 
-## Features
+# Features
 
 * Business matching using Explorium API
-* Decision-maker discovery using Prospeo API
-* Email resolution layer
+* Decision-maker discovery using Prospeo Search
+* Verified email enrichment using Prospeo Enrich
 * Email delivery using Brevo
 * Modular service architecture
 * Easily replaceable providers
@@ -42,7 +49,7 @@ Brevo Email Delivery
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 outreach-pipeline/
@@ -55,9 +62,8 @@ outreach-pipeline/
 │   └── contact.py
 │
 ├── services/
-│   ├── ocean.py
+│   ├── exlporium.py
 │   ├── prospeo.py
-│   ├── eazyreach.py
 │   └── brevo.py
 │
 └── utils/
@@ -68,39 +74,39 @@ outreach-pipeline/
 
 ---
 
-## Workflow
+# Workflow
 
-### 1. Domain Input
+## 1. Domain Input
 
 The user enters a company domain.
 
 Example:
 
 ```text
-openai.com
+stripe.com
 ```
 
 ---
 
-### 2. Explorium Business Matching
+## 2. Company Matching
 
 The domain is sent to Explorium's Business Match API.
 
 Example:
 
 ```text
-openai.com
+stripe.com
       ↓
 business_id
 ```
 
-This allows the system to identify and validate the target company.
+This validates and identifies the target company.
 
 ---
 
-### 3. Lead Discovery
+## 3. Decision-Maker Discovery
 
-Prospeo Search Person API is used to discover relevant contacts associated with the company.
+Prospeo Search is used to discover relevant contacts associated with the company.
 
 Examples:
 
@@ -108,50 +114,49 @@ Examples:
 * Founder
 * CTO
 * Engineering Leaders
+* Senior Decision Makers
 
 ---
 
-### 4. Email Resolution
+## 4. Email Enrichment
 
-The email resolution layer prepares contact email information for outreach workflows.
+Prospeo Enrich is used to retrieve verified email addresses for discovered contacts.
 
-This layer is isolated behind a service abstraction, making it easy to swap providers without affecting the rest of the application.
-
----
-
-### 5. Outreach Delivery
-
-Brevo is used to send outreach emails to discovered contacts.
+This step converts discovered prospects into outreach-ready contacts.
 
 ---
 
-## Technologies Used
+## 5. Outreach Delivery
+
+Brevo is used to send outreach emails to enriched contacts.
+
+---
+
+# Technologies Used
 
 * Python
 * Explorium API
 * Prospeo API
-* EazyReach
-* Brevo
+* Brevo API
 * REST APIs
 * Git
 * GitHub
 
 ---
 
-## Environment Variables
+# Environment Variables
 
 Create a `.env` file:
 
 ```env
 EXPLORIUM_API_KEY=your_key
 PROSPEO_API_KEY=your_key
-EAZYREACH_API_KEY=your_key
 BREVO_API_KEY=your_key
 ```
 
 ---
 
-## Installation
+# Installation
 
 Install dependencies:
 
@@ -161,7 +166,7 @@ pip install -r requirements.txt
 
 ---
 
-## Running The Project
+# Running The Project
 
 ```bash
 python main.py
@@ -170,54 +175,53 @@ python main.py
 Example:
 
 ```text
-Enter company domain: openai.com
+Enter company domain: stripe.com
 ```
 
 ---
 
-## Sample Output
+# Sample Output
 
 ```text
-Enter company domain: openai.com
-
-Matching business openai.com
+Enter company domain: stripe.com
 
 Finding decision makers
 
-Resolving emails
+Enriching contact emails
 
 Contacts Found
 
-John Doe openai.com johndoe@openai.com
+Thomas Haggarty stripe.com thaggarty@stripe.com
 ```
 
 ---
 
-## Design Decisions
+# Design Decisions
 
 The project follows a service-oriented architecture where each external provider is isolated behind its own service layer.
 
 Benefits:
 
 * Easy maintenance
-* Provider replacement without code changes
+* Provider replacement without major code changes
 * Better testing
 * Cleaner separation of concerns
+* Modular integrations
 
 ---
 
-## Future Improvements
+# Future Improvements
 
-* Real email verification
 * Multi-contact enrichment
 * Contact ranking
 * Similar company discovery
 * Campaign analytics
 * Database integration
 * Web dashboard
+* Scheduled outreach campaigns
 
 ---
 
-## Author
+# Author
 
 Astha Adhikari
